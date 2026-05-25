@@ -1,116 +1,137 @@
-<p align="center">
-  <img style="width:200px" src="https://raw.githubusercontent.com/huggingface/search-and-learn/main/assets/logo.png">
-</p>
+# AccTTS
 
-<p align="center">
-      🤗 <a href="https://huggingface.co/collections/HuggingFaceH4/scaling-test-time-compute-with-open-models-675c3b475a0d6eb4528fec23" target="_blank">Models & Datasets</a> |
-      📃 <a href="https://huggingface.co/spaces/HuggingFaceH4/blogpost-scaling-test-time-compute" target="_blank">Blog Post</a>
-</p>
+Anonymous artifact for **AccTTS: Bottleneck Analysis and Computational Optimization of Test-Time Scaling for Edge Deployment**.
 
-# Search and Learn
+AccTTS is an adaptive computational optimization framework for test-time scaling (TTS) decoding. It targets the changing compute pattern of TTS workloads, where decoding moves from many-beam, short-context execution to few-beam, long-context execution. AccTTS accelerates this process without changing the underlying TTS algorithm.
 
-Recipes to enhance LLM capabilities by scaling inference-time compute. Name inspired by Rich Sutton's [Bitter Lesson](https://www.cs.utexas.edu/~eunsol/courses/data/bitter_lesson.pdf):
+## Overview
 
-> One thing that should be learned from the bitter lesson is the great power of general purpose methods, of methods that continue to scale with increased computation even as the available computation becomes very great. The two methods that seem to scale arbitrarily in this way are _**search**_ and _**learning**_.
+TTS improves reasoning quality by spending more inference-time compute rather than increasing model size. This makes it attractive for memory-constrained edge deployment, but it also exposes two hardware bottlenecks:
 
-## What is this?
+- **Small-beam GEMM inefficiency:** as beams finish, GEMM shapes become skinny and general-purpose kernels waste work on padded rows.
+- **Low attention parallelism:** in the few-beam, long-context regime, attention kernels expose fewer thread blocks and underutilize the GPU.
 
-Over the last few years, the scaling of _**train-time compute**_ has dominated the progress of LLMs. Although this paradigm has proven to be remarkably effective, the resources needed to pretrain ever larger models are becoming prohibitively expensive, with billion-dollar clusters already on the horizon. This trend has sparked significant interest in a complementary approach: _**test-time compute scaling.**_ Rather than relying on ever-larger pretraining budgets, test-time methods use dynamic inference strategies that allow models to “think longer” on harder problems. A prominent example is OpenAI’s o1 model, which shows consistent improvement on difficult math and coding problems as one increases the amount of test-time compute.
+AccTTS addresses these bottlenecks with:
 
-Although we don't know how o1 was trained, Search and Learn aims to fill that gap by providing the community with a series of recipes that enable open models to solve complex problems if you give them enough “time to think”. 
+- **Beam-aware GEMM selection:** offline profiling selects efficient GEMM kernels for beam-dependent shapes, and runtime execution dispatches kernels according to the current number of alive beams.
+- **Profiling-based attention chunk splitting:** offline profiling builds a lookup table over beam counts and context lengths, and runtime execution chooses when and how to split attention contexts.
 
-## News 🗞️
+Integrated with a vLLM-based TTS pipeline, AccTTS achieves **1.08x to 1.43x end-to-end speedup** across MATH-500, AIME, Qwen-2.5-1.5B-Instruct, Llama-3.2-1B-Instruct, Best-of-N, and beam search.
 
-* **December 16, 2024**: Initial release with code to replicate the test-time compute scaling results of our [blog post](https://huggingface.co/spaces/HuggingFaceH4/blogpost-scaling-test-time-compute).
+## Figures
 
-## How to navigate this project 🧭
+Selected figures from the paper are included under [`figures/`](figures/).
 
-This project is simple by design and mostly consists of:
+| Compute Pattern | Bottleneck Analysis |
+| :---: | :---: |
+| ![Best-of-N compute pattern](figures/compute_pattern_visualize_best_of_n.png) | ![Bottleneck analysis](figures/bottleneck_experimental_analysis.png) |
 
-* [`scripts`](./scripts/) to scale test-time compute for open models. 
-* [`recipes`](./recipes/) to apply different search algorithms at test-time. Three algorithms are currently supported: Best-of-N, beam search, and Diverse Verifier Tree Search (DVTS). Each recipe takes the form of a YAML file which contains all the parameters associated with a single inference run. 
+| End-to-End Results | Kernel Contributions |
+| :---: | :---: |
+| ![Qwen MATH-500 Best-of-N](figures/e2e_results_bon_MATH500_QWen.png) | ![Attribution analysis](figures/attribution_bon_MATH500_QWen.png) |
 
-To get started, we recommend the following:
+Additional processed profiling artifacts are provided in [`nvidia_toolkit_data/`](nvidia_toolkit_data/). Raw Nsight reports and local model/data caches are intentionally excluded from the anonymous repository.
 
-1. Follow the [installation instructions](#installation-instructions) to set up your environment etc.
-2. Replicate our test-time compute results by following the [recipe instructions](./recipes/README.md).
+## Repository Structure
 
-## Contents
-
-The initial release of Search and Learn will focus on the following techniques:
-
-* **Search against verifiers:** guide LLMs to search for solutions to "verifiable problems" (math, code) by using a stepwise or process reward model to score each step. Includes techniques like Best-of-N sampling and tree search.
-* **Training process reward models:** train reward models to provide a sequence of scores, one for each step of the reasoning process. This ability to provide fine-grained feedback makes PRMs a natural fit for search methods with LLMs.
-
-
-# Installation instructions
-
-To run the code in this project, first, create a Python virtual environment using e.g. Conda:
-
-```shell
-conda create -n sal python=3.11 && conda activate sal
+```text
+.
+├── agent_markdown/          # Experiment notes and sweep logs
+├── figures/                 # Paper figures
+├── nvidia_toolkit_data/     # Processed profiling CSV/XLSX data and notebooks
+├── recipes/                 # YAML configs for TTS algorithms and models
+├── scripts/                 # Profiling, tracing, replay, and plotting scripts
+├── src/sal/                 # TTS pipeline and AccTTS-related runtime code
+└── tests/                   # Minimal tests
 ```
 
-```shell
+This codebase extends a search-and-learn style TTS pipeline with AccTTS-specific tracing, replay, GEMM profiling, attention profiling, and runtime optimization support.
+
+## Installation
+
+Create a Python environment:
+
+```bash
+conda create -n acctts python=3.11
+conda activate acctts
+```
+
+Install the repository:
+
+```bash
+pip install -e .
+```
+
+For development utilities:
+
+```bash
 pip install -e '.[dev]'
 ```
 
-Next, log into your Hugging Face account as follows:
+You will also need a CUDA-capable PyTorch/vLLM/Triton stack compatible with your GPU. Some model or dataset accesses may require Hugging Face login:
 
-```shell
+```bash
 huggingface-cli login
 ```
 
-Finally, install Git LFS so that you can push models to the Hugging Face Hub:
+## Quick Start
 
-```shell
-sudo apt-get install git-lfs
+Run a small Best-of-N example:
+
+```bash
+python scripts/test_time_compute.py recipes/Qwen2.5-1.5B-Instruct/best_of_n.yaml \
+  --num_samples=2 \
+  --n=4
 ```
 
-You can now check out the `scripts` and `recipes` directories for instructions on how to scale test-time compute for open models!
+Run a small beam-search example:
 
-## Project structure
-
-```
-├── LICENSE
-├── Makefile                    <- Makefile with commands like `make style`
-├── README.md                   <- The top-level README for developers using this project
-├── recipes                     <- Recipe configs, accelerate configs, slurm scripts
-├── scripts                     <- Scripts to scale test-time compute for models
-├── pyproject.toml              <- Installation config (mostly used for configuring code quality & tests)
-├── setup.py                    <- Makes project pip installable (pip install -e .) so `sal` can be imported
-├── src                         <- Source code for use in this project
-└── tests                       <- Unit tests
+```bash
+python scripts/test_time_compute.py recipes/Qwen2.5-1.5B-Instruct/beam_search.yaml \
+  --num_samples=2 \
+  --n=4
 ```
 
-## Replicating our test-time compute results
+Outputs are written under `data/` by default. The `data/` directory is ignored by Git because full experiment outputs and model caches can be large.
 
-The [`recipes` README](recipes/README.md) includes launch commands and config files in order to replicate our results.
+## Reproducing Paper-Style Experiments
 
+The paper uses replay-based evaluation so that different kernels execute the same recorded workload. The main workflow is:
+
+1. Collect token-length traces for a TTS setting.
+2. Replay the recorded workload with the baseline or AccTTS kernels.
+3. Aggregate latency and accuracy metrics.
+4. Regenerate plots from the notebooks in `scripts/` and `nvidia_toolkit_data/`.
+
+Useful entry points include:
+
+- [`scripts/run_aime_sweep.sh`](scripts/run_aime_sweep.sh)
+- [`scripts/run_qwen3b_sweep.sh`](scripts/run_qwen3b_sweep.sh)
+- [`scripts/run_llama1b_sweep.sh`](scripts/run_llama1b_sweep.sh)
+- [`scripts/beam_search_task_trace.py`](scripts/beam_search_task_trace.py)
+- [`scripts/best_of_n_task_trace.py`](scripts/best_of_n_task_trace.py)
+- [`scripts/gemm_best_templates_collect.py`](scripts/gemm_best_templates_collect.py)
+- [`scripts/chunk_setting_profile.py`](scripts/chunk_setting_profile.py)
+
+The experiment notes in [`agent_markdown/`](agent_markdown/) document the sweep order and expected artifacts.
+
+## Main Configurations
+
+Representative configs are available for:
+
+- Qwen-2.5-1.5B-Instruct
+- Llama-3.2-1B-Instruct
+- Llama-3.2-3B-Instruct
+- AceMath-7B-Instruct
+
+Each model folder under [`recipes/`](recipes/) contains Best-of-N, beam search, and DVTS configs. The shared configs [`recipes/best-of-n.yaml`](recipes/best-of-n.yaml) and [`recipes/beam-search.yaml`](recipes/beam-search.yaml) are used by several sweep scripts.
+
+## Notes for Anonymous Review
+
+- The repository contains source code, configs, processed profiling data, and paper figures.
+- Raw local logs, Hugging Face caches, model blobs, generated experiment outputs, and Nsight binary reports are excluded.
+- The submitted PDF is not required to run the code and is not included in this repository.
 
 ## Citation
 
-If you find the content of this repo useful in your work, please cite it as follows via `\usepackage{biblatex}`:
-
-```
-@misc{beeching2024scalingtesttimecompute,
-      title={Scaling test-time compute with open models},
-      author={Edward Beeching and Lewis Tunstall and Sasha Rush},
-      url={https://huggingface.co/spaces/HuggingFaceH4/blogpost-scaling-test-time-compute},
-}
-```
-
-Please also cite the original work by DeepMind upon which this repo is based:
-
-```
-@misc{snell2024scalingllmtesttimecompute,
-      title={Scaling LLM Test-Time Compute Optimally can be More Effective than Scaling Model Parameters}, 
-      author={Charlie Snell and Jaehoon Lee and Kelvin Xu and Aviral Kumar},
-      year={2024},
-      eprint={2408.03314},
-      archivePrefix={arXiv},
-      primaryClass={cs.LG},
-      url={https://arxiv.org/abs/2408.03314}, 
-}
-```
-
+This repository accompanies an anonymous EMNLP 2026 submission. Citation information will be added after the review process.
