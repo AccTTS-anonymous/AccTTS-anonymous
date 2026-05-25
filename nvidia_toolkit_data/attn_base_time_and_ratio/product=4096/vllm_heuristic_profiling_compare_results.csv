@@ -1,0 +1,34 @@
+n_beams,base_prompt_len,padded_prompt_len,actual_total_prompt_len,variant,chunk_size_page,split_k,time_ms,note
+1,184,4096,4280,FA,,,267.2256949590519,
+1,184,4096,4280,FD_heuristic,13.0,22.0,173.97534602787346,
+1,184,4096,4280,our_profiling,8.0,,172.7468939498067,"best=FD-8; candidates=FA + [4, 6, 8, 16, 32, 64]"
+2,184,2048,2232,FA,,,178.6110340617597,
+2,184,2048,2232,FD_heuristic,13.0,11.0,173.87063894420862,
+2,184,2048,2232,our_profiling,64.0,,166.12138506025076,"best=FD-64; candidates=FA + [4, 6, 8, 16, 32, 64]"
+4,184,1024,1208,FA,,,152.2741080261767,
+4,184,1024,1208,FD_heuristic,13.0,6.0,165.24490690790117,
+4,184,1024,1208,our_profiling,,,152.2741080261767,"best=FA; candidates=FA + [4, 6, 8, 16, 32, 64]"
+8,184,512,696,FA,,,135.99904999136925,
+8,184,512,696,FD_heuristic,9.0,5.0,166.22538096271455,
+8,184,512,696,our_profiling,,,135.99904999136925,"best=FA; candidates=FA + [4, 6, 8, 16, 32, 64]"
+16,184,256,440,FA,,,122.60602205060422,
+16,184,256,440,FD_heuristic,14.0,2.0,170.14746798668057,
+16,184,256,440,our_profiling,,,122.60602205060422,"best=FA; candidates=FA + [4, 6, 8, 16, 32, 64]"
+24,184,170,354,FA,,,125.83371601067483,
+24,184,170,354,FD_heuristic,23.0,1.0,125.83371601067483,heuristic selected no chunk; reused FA time
+24,184,170,354,our_profiling,,,125.83371601067483,"best=FA; candidates=FA + [4, 6, 8, 16, 32, 64]"
+32,184,128,312,FA,,,129.64629603084177,
+32,184,128,312,FD_heuristic,10.0,2.0,181.01287598256022,
+32,184,128,312,our_profiling,,,129.64629603084177,"best=FA; candidates=FA + [4, 6, 8, 16, 32, 64]"
+40,184,102,286,FA,,,139.45523602887988,
+40,184,102,286,FD_heuristic,9.0,2.0,204.7381029697135,
+40,184,102,286,our_profiling,,,139.45523602887988,"best=FA; candidates=FA + [4, 6, 8, 16, 32, 64]"
+48,184,85,269,FA,,,144.56312591210008,
+48,184,85,269,FD_heuristic,17.0,1.0,144.56312591210008,heuristic selected no chunk; reused FA time
+48,184,85,269,our_profiling,,,144.56312591210008,"best=FA; candidates=FA + [4, 6, 8, 16, 32, 64]"
+56,184,73,257,FA,,,134.8741319961846,
+56,184,73,257,FD_heuristic,17.0,1.0,134.8741319961846,heuristic selected no chunk; reused FA time
+56,184,73,257,our_profiling,,,134.8741319961846,"best=FA; candidates=FA + [4, 6, 8, 16, 32, 64]"
+64,184,64,248,FA,,,150.12736700009555,
+64,184,64,248,FD_heuristic,16.0,1.0,150.12736700009555,heuristic selected no chunk; reused FA time
+64,184,64,248,our_profiling,,,150.12736700009555,"best=FA; candidates=FA + [4, 6, 8, 16, 32, 64]"

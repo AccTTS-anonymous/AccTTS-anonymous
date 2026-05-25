@@ -1,0 +1,17 @@
+method,beam,gemm_us,attn_us,other_us,gemm_kernel
+AccTTS,2,1009.061,2128.367,354.69,cutlass_80_wmma_tensorop_bf16_s161616gemm_bf16_16x16_128x2_tn_align8
+AccTTS,4,1015.493,2337.737,359.617,cutlass_80_wmma_tensorop_bf16_s161616gemm_bf16_16x16_128x2_tn_align8
+AccTTS,8,1025.348,3201.584,376.321,cutlass_80_wmma_tensorop_bf16_s161616gemm_bf16_16x16_128x2_tn_align8
+AccTTS,16,1037.284,4931.094,403.426,cutlass_80_wmma_tensorop_bf16_s161616gemm_bf16_16x16_128x1_tn_align8
+AccTTS,32,1081.669,7897.445,468.225,cutlass_80_tensorop_bf16_s16816gemm_relu_bf16_64x64_32x6_tn_align8
+AccTTS,64,14362.757,14350.723,1503.654,cutlass_80_tensorop_bf16_s16816gemm_relu_bf16_64x64_32x6_tn_align8
+AccTTS,128,20269.296,27751.185,3901.841,ampere_bf16_s16816gemm_bf16_128x64_ldg8_f2f_tn
+AccTTS,256,32126.83,54515.784,8229.39,ampere_bf16_s16816gemm_bf16_128x64_ldg8_f2f_tn
+vLLM,2,1008.995,2116.773,350.273,cutlass_80_wmma_tensorop_bf16_s161616gemm_bf16_16x16_128x2_tn_align8
+vLLM,4,1015.044,2325.828,363.969,cutlass_80_wmma_tensorop_bf16_s161616gemm_bf16_16x16_128x2_tn_align8
+vLLM,8,1024.804,3169.259,384.353,cutlass_80_wmma_tensorop_bf16_s161616gemm_bf16_16x16_128x2_tn_align8
+vLLM,16,1037.443,4921.868,402.21,cutlass_80_wmma_tensorop_bf16_s161616gemm_bf16_16x16_128x1_tn_align8
+vLLM,32,1086.853,7886.339,467.073,cutlass_80_tensorop_bf16_s16816gemm_relu_bf16_64x64_32x6_tn_align8
+vLLM,64,14334.82,14346.912,1506.44,cutlass_80_tensorop_bf16_s16816gemm_relu_bf16_64x64_32x6_tn_align8
+vLLM,128,20229.085,27695.842,3904.849,ampere_bf16_s16816gemm_bf16_128x64_ldg8_f2f_tn
+vLLM,256,32052.669,54396.46,8221.319,ampere_bf16_s16816gemm_bf16_128x64_ldg8_f2f_tn
