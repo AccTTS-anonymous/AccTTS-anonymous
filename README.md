@@ -2,16 +2,16 @@
 
 Anonymous artifact for **AccTTS: Bottleneck Analysis and Computational Optimization of Test-Time Scaling for Edge Deployment**.
 
-AccTTS is an adaptive computational optimization framework for test-time scaling (TTS) decoding. It targets the changing compute pattern of TTS workloads, where decoding moves from many-beam, short-context execution to few-beam, long-context execution. AccTTS accelerates this process without changing the underlying TTS algorithm.
+AccTTS is an adaptive computational optimization framework for test-time scaling (TTS) decoding. Its starting point is the **evolving compute pattern** of TTS: decoding begins with many beams and short contexts, then gradually shifts toward fewer surviving beams with longer contexts. AccTTS accelerates this process without changing the underlying TTS algorithm.
 
 ## Overview
 
-TTS improves reasoning quality by spending more inference-time compute rather than increasing model size. This makes it attractive for memory-constrained edge deployment, but it also exposes two hardware bottlenecks:
+TTS improves reasoning quality by spending more inference-time compute rather than increasing model size. This makes it attractive for memory-constrained edge deployment, but its dynamic compute pattern exposes two hardware bottlenecks:
 
 - **Small-beam GEMM inefficiency:** as beams finish, GEMM shapes become skinny and general-purpose kernels waste work on padded rows.
 - **Low attention parallelism:** in the few-beam, long-context regime, attention kernels expose fewer thread blocks and underutilize the GPU.
 
-AccTTS addresses these bottlenecks with:
+AccTTS matches its runtime kernel choices to the current stage of this compute pattern:
 
 - **Beam-aware GEMM selection:** offline profiling selects efficient GEMM kernels for beam-dependent shapes, and runtime execution dispatches kernels according to the current number of alive beams.
 - **Profiling-based attention chunk splitting:** offline profiling builds a lookup table over beam counts and context lengths, and runtime execution chooses when and how to split attention contexts.
@@ -26,9 +26,19 @@ Selected figures from the paper are included under [`figures/`](figures/).
 | :---: | :---: |
 | ![Best-of-N compute pattern](figures/compute_pattern_visualize_best_of_n.png) | ![Bottleneck analysis](figures/bottleneck_experimental_analysis.png) |
 
-| End-to-End Results | Kernel Contributions |
+### End-to-End Results
+
+| Best-of-N on MATH-500 | Beam Search on MATH-500 |
 | :---: | :---: |
-| ![Qwen MATH-500 Best-of-N](figures/e2e_results_bon_MATH500_QWen.png) | ![Attribution analysis](figures/attribution_bon_MATH500_QWen.png) |
+| ![Best-of-N on MATH-500](figures/e2e_results_bon_MATH500_QWen.png) | ![Beam search on MATH-500](figures/e2e_results_bs_MATH500_QWen.png) |
+
+| Best-of-N on AIME | Beam Search on AIME |
+| :---: | :---: |
+| ![Best-of-N on AIME](figures/e2e_results_bon_AIME_QWen.png) | ![Beam search on AIME](figures/e2e_results_bs_AIME_QWen.png) |
+
+| Kernel Contributions |
+| :---: |
+| ![Attribution analysis](figures/attribution_bon_MATH500_QWen.png) |
 
 Additional processed profiling artifacts are provided in [`nvidia_toolkit_data/`](nvidia_toolkit_data/). Raw Nsight reports and local model/data caches are intentionally excluded from the anonymous repository.
 
@@ -45,7 +55,7 @@ Additional processed profiling artifacts are provided in [`nvidia_toolkit_data/`
 └── tests/                   # Minimal tests
 ```
 
-This codebase extends a search-and-learn style TTS pipeline with AccTTS-specific tracing, replay, GEMM profiling, attention profiling, and runtime optimization support.
+This codebase is adapted from [Hugging Face Search and Learn](https://github.com/huggingface/search-and-learn) and extends that TTS pipeline with AccTTS-specific tracing, replay, GEMM profiling, attention profiling, and runtime optimization support.
 
 ## Installation
 
@@ -79,18 +89,18 @@ huggingface-cli login
 Run a small Best-of-N example:
 
 ```bash
-python scripts/test_time_compute.py recipes/Qwen2.5-1.5B-Instruct/best_of_n.yaml \
-  --num_samples=2 \
-  --n=4
+python scripts/test_time_compute.py recipes/best-of-n.yaml
 ```
+
+The concrete dataset, model, beam count, PRM setting, GEMM option, and attention chunking mode are controlled in [`recipes/best-of-n.yaml`](recipes/best-of-n.yaml).
 
 Run a small beam-search example:
 
 ```bash
-python scripts/test_time_compute.py recipes/Qwen2.5-1.5B-Instruct/beam_search.yaml \
-  --num_samples=2 \
-  --n=4
+python scripts/test_time_compute.py recipes/beam-search.yaml
 ```
+
+The concrete beam-search parameters are controlled in [`recipes/beam-search.yaml`](recipes/beam-search.yaml).
 
 Outputs are written under `data/` by default. The `data/` directory is ignored by Git because full experiment outputs and model caches can be large.
 
@@ -101,17 +111,7 @@ The paper uses replay-based evaluation so that different kernels execute the sam
 1. Collect token-length traces for a TTS setting.
 2. Replay the recorded workload with the baseline or AccTTS kernels.
 3. Aggregate latency and accuracy metrics.
-4. Regenerate plots from the notebooks in `scripts/` and `nvidia_toolkit_data/`.
-
-Useful entry points include:
-
-- [`scripts/run_aime_sweep.sh`](scripts/run_aime_sweep.sh)
-- [`scripts/run_qwen3b_sweep.sh`](scripts/run_qwen3b_sweep.sh)
-- [`scripts/run_llama1b_sweep.sh`](scripts/run_llama1b_sweep.sh)
-- [`scripts/beam_search_task_trace.py`](scripts/beam_search_task_trace.py)
-- [`scripts/best_of_n_task_trace.py`](scripts/best_of_n_task_trace.py)
-- [`scripts/gemm_best_templates_collect.py`](scripts/gemm_best_templates_collect.py)
-- [`scripts/chunk_setting_profile.py`](scripts/chunk_setting_profile.py)
+4. Regenerate plots from JSON and CSV files under `data/<model_name>/<dataset_name>/<algorithm_name>/`.
 
 The experiment notes in [`agent_markdown/`](agent_markdown/) document the sweep order and expected artifacts.
 
