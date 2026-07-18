@@ -20,7 +20,7 @@ record the information (dataset, `n`, problem index if applicable) in the log.
 Use the correct conda env and set it before running experiments.
 
 ```
-cd /path/to/AccTTS
+cd $REPO_ROOT
 conda activate sal_new_vllm
 export VLLM_USE_V1=1
 export VLLM_ATTENTION_BACKEND=TRITON_ATTN_VLLM_V1

@@ -24,7 +24,7 @@ export VLLM_USE_V1=1
 export VLLM_ATTENTION_BACKEND=TRITON_ATTN_VLLM_V1
 export VLLM_ENABLE_V1_MULTIPROCESSING=0
 # HF caches live on the data volume.
-export HF_HOME="${HF_HOME:-$PROJECT_ROOT/.cache/huggingface}"
+export HF_HOME="${HF_HOME:-$HOME/.cache/huggingface}"
 export TRANSFORMERS_CACHE="${TRANSFORMERS_CACHE:-$HF_HOME}"
 # We do not set HF_HUB_OFFLINE because the model dir is keyed on the
 # case-sensitive name "QWen2.5-3B-Instruct" while the canonical HF id is

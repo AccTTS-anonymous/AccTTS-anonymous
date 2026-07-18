@@ -16,7 +16,7 @@ conda activate sal_new_vllm
 export VLLM_USE_V1=1
 export VLLM_ATTENTION_BACKEND=TRITON_ATTN_VLLM_V1
 export VLLM_ENABLE_V1_MULTIPROCESSING=0
-export HF_TOKEN=<your_huggingface_token>   # Llama 3.2 is gated; the token must be on an
+export HF_TOKEN=YOUR_HUGGING_FACE_TOKEN   # Llama 3.2 is gated; the token must be on an
                                # HF account that has accepted the license at
                                # https://huggingface.co/meta-llama/Llama-3.2-1B-Instruct
 
@@ -29,7 +29,7 @@ the exact HF id (no case mangling).
 For this model:
 - Max #beams = **64**. The full sweep grid is `BEAMS = [2, 4, 8, 16, 32, 64]`.
 - `max_tokens = 4096` always (already set in both recipe YAMLs).
-- All artifacts land under `/path/to/AccTTS/data/meta-llama/Llama-3.2-1B-Instruct/`.
+- All artifacts land under `$REPO_ROOT/data/meta-llama/Llama-3.2-1B-Instruct/`.
 
 Both `recipes/best-of-n.yaml` and `recipes/beam-search.yaml` already declare
 `model_path: meta-llama/Llama-3.2-1B-Instruct`.
@@ -80,7 +80,7 @@ files exist before proceeding — `AttnLUT.from_env` reads
 back to vLLM's default chunk formula.
 
 ```
-ls /path/to/AccTTS/data/meta-llama/Llama-3.2-1B-Instruct/
+ls $REPO_ROOT/data/meta-llama/Llama-3.2-1B-Instruct/
 ```
 
 Expected files (all four must be present):

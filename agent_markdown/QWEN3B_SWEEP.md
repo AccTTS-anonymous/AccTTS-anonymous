@@ -26,7 +26,7 @@ folder convention `QWen2.5-1.5B-Instruct`, the actual HF id is case-insensitive)
 For this model:
 - Max #beams = **64**. The full sweep grid is `BEAMS = [2, 4, 8, 16, 32, 64]`.
 - `max_tokens = 4096` always (already set in both recipe YAMLs).
-- All artifacts land under `/path/to/AccTTS/data/Qwen/QWen2.5-3B-Instruct/`
+- All artifacts land under `$REPO_ROOT/data/Qwen/QWen2.5-3B-Instruct/`
   (the directory has been pre-created and is currently empty).
 
 Both `recipes/best-of-n.yaml` and `recipes/beam-search.yaml` already declare
@@ -109,7 +109,7 @@ The chunked-decode profiler also needs trimming to stop at n=64.
 4. **Verify the LUT files exist** in the correct location:
 
    ```
-   ls /path/to/AccTTS/data/Qwen/QWen2.5-3B-Instruct/
+   ls $REPO_ROOT/data/Qwen/QWen2.5-3B-Instruct/
    ```
 
    Expected files:

@@ -23,7 +23,7 @@ cd "$PROJECT_ROOT"
 export VLLM_USE_V1=1
 export VLLM_ATTENTION_BACKEND=TRITON_ATTN_VLLM_V1
 export VLLM_ENABLE_V1_MULTIPROCESSING=0
-export HF_HOME="${HF_HOME:-$PROJECT_ROOT/.cache/huggingface}"
+export HF_HOME="${HF_HOME:-$HOME/.cache/huggingface}"
 export TRANSFORMERS_CACHE="${TRANSFORMERS_CACHE:-$HF_HOME}"
 
 PY="${PYTHON:-python}"

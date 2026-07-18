@@ -17,7 +17,7 @@ filter_duplicates: true
 # num_samples: 1         # REMOVE THIS LINE TO RUN ON THE WHOLE DATASET
 seed: 0
 push_to_hub: false
-max_tokens: 4096
+max_tokens: 2048
 gemm_opt: false
 chunk_size: none     # [dynamic, heuristic, none]
 disable_prm: true

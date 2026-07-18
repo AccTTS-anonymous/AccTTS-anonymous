@@ -26,7 +26,7 @@ Dataset is AIME (`AI-MO/aimo-validation-aime`, split `train`, 90 problems). Both
 for the dataset itself.
 
 Outputs land under
-`/path/to/AccTTS/data/Qwen/QWen2.5-1.5B-Instruct/aimo-validation-aime/`
+`$REPO_ROOT/data/Qwen/QWen2.5-1.5B-Instruct/aimo-validation-aime/`
 (driven by `model_path`/`dataset_name` in the recipes). The dataset's
 short-name segment is `aimo-validation-aime`.
 

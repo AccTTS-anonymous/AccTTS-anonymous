@@ -27,7 +27,7 @@ Dataset is MATH500. Method is beam_search.
 Recipe defaults assumed: `gpu_memory_utilization: 0.9` and `max_tokens: 4096`. The 0.9 figure is safe because we no longer load the PRM model — that ~3 GB slot is free. `max_tokens=4096` doubles the prior 2048 cap; on a 24 GB 4090 the worst-case KV at `n=128, max_tokens=4096` is ~14.7 GB (Qwen-2.5-1.5B uses GQA with `num_kv_heads=2`), which fits inside the 0.9 budget.
 
 Trace literals (`beam_search_n{n}`) already exist for `n ∈ {2, 4, 8, 16, 32, 64}` in
-`/path/to/AccTTS/data/Qwen/QWen2.5-1.5B-Instruct/MATH-500/`. For `n=128` you'll need to generate one first via Step 0 below.
+`$REPO_ROOT/data/Qwen/QWen2.5-1.5B-Instruct/MATH-500/`. For `n=128` you'll need to generate one first via Step 0 below.
 
 ### Step 0 (only if the trace is missing for some `n`)
 
@@ -45,7 +45,7 @@ This runs beam_search natively (forces `gemm_opt=false, chunk_size=none` interna
 
 For each `n` in [2, 4, 8, 16, 32, 64, 128]:
 
-1. Edit `n` in `/path/to/AccTTS/recipes/beam-search.yaml`. When `n=2`, also set `beam_width=2` (the default `beam_width=4` would give `n // beam_width = 0` survivors and the search dies after iter 0). Other `n` values can keep the default.
+1. Edit `n` in `$REPO_ROOT/recipes/beam-search.yaml`. When `n=2`, also set `beam_width=2` (the default `beam_width=4` would give `n // beam_width = 0` survivors and the search dies after iter 0). Other `n` values can keep the default.
 
 2. **Replay with vllm settings** *(skip for `n=128`, already produced by Step 0)*. Set `gemm_opt: false`, `chunk_size: none` in the recipe and run
    ```
@@ -64,7 +64,7 @@ Then move on to the next `n`. Both replays use deterministic survivor selection 
 The output filename suffix (`_vllm` / `_ours` / `_FD` / `_TurnOffGEMM`) is auto-derived from `(gemm_opt, chunk_size)`. If the two flags do not match one of the named combos, `beam_search_beam.py` raises rather than writing un-suffixed files.
 
 After all sweeps you will have, for each `{n}`, in
-`/path/to/AccTTS/data/Qwen/QWen2.5-1.5B-Instruct/MATH-500`:
+`$REPO_ROOT/data/Qwen/QWen2.5-1.5B-Instruct/MATH-500`:
 - `beam_search_n{n}` — Python literal with `REQUEST_STEP_GEN_TOKENS` and `REQUEST_STEP_COMPLETED` (the trace; consumed by replay)
 - `beam_search_n{n}.csv` — columns: problem, step_idx, beam_idx, gen_len (per-step vllm trace, for inspection)
 - `beam_search_n{n}_timing.csv` — columns: problem, step_idx, beam_idx, gen_time_ms (per-step vllm trace, for inspection)

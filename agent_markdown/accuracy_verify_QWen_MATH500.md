@@ -26,7 +26,7 @@ every beam with the PRM, and save the results as JSON.
 ## Step 0 — Environment
 
 ```bash
-cd /path/to/AccTTS
+cd $REPO_ROOT
 conda activate sal_new_vllm
 export VLLM_USE_V1=1
 export VLLM_ATTENTION_BACKEND=TRITON_ATTN_VLLM_V1

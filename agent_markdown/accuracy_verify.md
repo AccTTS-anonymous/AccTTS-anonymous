@@ -26,12 +26,12 @@ Run these first (the `export` block, including the gated-Llama `HF_TOKEN`, is
 copied verbatim from `LLAMA1B_SWEEP.md` lines 14-21):
 
 ```bash
-cd /path/to/AccTTS
+cd $REPO_ROOT
 conda activate sal_new_vllm
 export VLLM_USE_V1=1
 export VLLM_ATTENTION_BACKEND=TRITON_ATTN_VLLM_V1
 export VLLM_ENABLE_V1_MULTIPROCESSING=0
-export HF_TOKEN=<your_huggingface_token>   # must be on an HF account
+export HF_TOKEN=YOUR_HUGGING_FACE_TOKEN   # must be on an HF account
                                                         # that accepted the
                                                         # Llama-3.2-1B license
 ```

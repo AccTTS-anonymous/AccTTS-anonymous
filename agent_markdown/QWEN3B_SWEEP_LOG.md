@@ -87,8 +87,8 @@ split `test`) take over.
   bug, but the log
   `logs/qwen3b/bon_math500_trace_n2.log` captured the diagnostic.
 - **Fix:** removed `HF_HUB_OFFLINE=1`/`TRANSFORMERS_OFFLINE=1`, added
-  explicit absolute `HF_HOME=/path/to/hf_cache` and
-  `TRANSFORMERS_CACHE=/path/to/hf_cache`.
+  explicit absolute `HF_HOME=$HF_HOME` and
+  `TRANSFORMERS_CACHE=$HF_HOME`.
 
 ### Run (first attempt, killed)
 

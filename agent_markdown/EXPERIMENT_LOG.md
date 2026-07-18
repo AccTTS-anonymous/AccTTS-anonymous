@@ -7,7 +7,7 @@ Per BEAM_SEARCH.md instructions, sweep beam_search on MATH-500. User-modified sc
 - For n in [2, 4, 8, 16, 32, 64]: run **ours** replay only (traces and vllm timings already exist).
 - For n=128: run **both** trace+vllm and ours replay.
 
-## Pre-existing files in `/path/to/AccTTS/data/Qwen/QWen2.5-1.5B-Instruct/MATH-500/`
+## Pre-existing files in `$REPO_ROOT/data/Qwen/QWen2.5-1.5B-Instruct/MATH-500/`
 - `beam_search_n{2,4,8,16,32,64}` (traces)
 - `beam_search_n{2,4,8,16,32,64}.csv`
 - `beam_search_n{2,4,8,16,32,64}_timing.csv`
@@ -17,7 +17,7 @@ Missing: `beam_search_request_timings_ours_n{...}.csv` for all n; everything for
 ## Environment
 - conda env: `sal_new_vllm`
 - VLLM_USE_V1=1, VLLM_ATTENTION_BACKEND=TRITON_ATTN_VLLM_V1, VLLM_ENABLE_V1_MULTIPROCESSING=0
-- cwd: `/path/to/AccTTS`
+- cwd: `$REPO_ROOT`
 
 ## Actions
 

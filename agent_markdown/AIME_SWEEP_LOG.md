@@ -4,7 +4,7 @@ Per AIME_SWEEP.md instructions, this file records every action taken during the
 AIME sweep (best_of_n then beam_search, n ∈ {2, 4, 8, 16, 32, 64, 128}) along
 with success/fail status and any code or recipe modifications.
 
-Working dir: `/path/to/AccTTS`
+Working dir: `$REPO_ROOT`
 Conda env:   `sal_new_vllm` (active)
 Env vars:    `VLLM_USE_V1=1`, `VLLM_ATTENTION_BACKEND=TRITON_ATTN_VLLM_V1`,
              `VLLM_ENABLE_V1_MULTIPROCESSING=0`
@@ -31,7 +31,7 @@ Env vars:    `VLLM_USE_V1=1`, `VLLM_ATTENTION_BACKEND=TRITON_ATTN_VLLM_V1`,
 - **FAIL** `BON_TRACE_FAIL n=2 rc=1` at 2026-05-10 20:35:26.
   - Root cause: `HF_HUB_OFFLINE=1` (carried over from
     `run_beam_search_sweep.sh`) blocked the AIME dataset fetch from the Hub —
-    `AI-MO/aimo-validation-aime` was not in `/path/to/hf_cache/datasets/`.
+    `AI-MO/aimo-validation-aime` was not in `$HF_HOME/datasets/`.
     Model weights were already cached so the model loaded fine; only the
     dataset lookup tripped on offline mode.
   - Fix: pre-cached the dataset by running `load_dataset("AI-MO/aimo-validation-aime",

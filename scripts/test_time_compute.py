@@ -139,7 +139,9 @@ def main():
     if config.approach == "best_of_n":
         import importlib
         _bn_mod = importlib.import_module("sal.search.best_of_n_beam")
+        #########################################
         _bn_mod.REQUEST_GEN_TOKENS = _bn_mod.load_trace_for_config(config)
+        #########################################
         _trace_path = _bn_mod.trace_path_for_config(config)
         logger.info(
             "best_of_n trace: %d forced (problem, beam) entries from %s",
